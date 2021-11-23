@@ -1,0 +1,28 @@
+* {
+	margin: 0;
+	padding: 0;
+	cursor: default;
+	font-size: 14px;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+}
+
+#logo{
+	width: 150px;
+	height: 50px;
+	background-size:100% 100%;
+	background-image: url("../images/logo/logo.png");
+}
+
+.tab-bar {
+	width: 150px;
+	text-align: left;
+	padding-left: 20%;
+	padding-top: 5%;
+}
+
+.tab{
+	margin: 1rem;
+}

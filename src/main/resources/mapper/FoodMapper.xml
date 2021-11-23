@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.FoodMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Food">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="unit" property="unit" jdbcType="VARCHAR"></result>
+        <result column="storage" property="storage" jdbcType="NUMERIC"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, name, unit, storage
+    </sql>
+
+    <select id="selectAllFood" resultMap="BaseResultMap">
+        select *
+        from food;
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from food
+        where id = #{id}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from food
+        where name = #{name}
+    </select>
+
+    <insert id="insert">
+        insert into food(name, unit, storage)
+        values(#{name}, #{unit}, 0)
+    </insert>
+
+    <update id="updateById">
+        update food
+        set name = #{name}, unit = #{unit}, storage = #{storage}
+        where id = #{id}
+    </update>
+
+    <update id="updateStorageById">
+        update food
+        set storage = #{storage}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from food
+        where id = #{id}
+    </delete>
+</mapper>

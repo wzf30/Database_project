@@ -1,0 +1,1276 @@
+<!--
+ * Created by zhangyipeng on 2021/06/12.
+ *-->
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>动物园后台管理系统</title>
+		<link rel="shortcut icon" href="images/logo/zoo.png" type="image/x-icon" />
+		<link rel="stylesheet" href="css/index.css">		
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	</head>
+	<body>
+		<div id="index">
+			<div id="logo"></div>
+			<el-tabs tab-position="left" style="height: 90vh;">
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-menu"></i> 控制台 </div>
+					<div class="tab">
+						<h1>动物园现有动物一览</h1>
+						<div id="animal_chart" style="width: 600px;height:400px;"></div>
+						<h1>食物花销一览</h1>
+						<div id="food_cost_chart" style="width: 600px;height:400px;"></div>
+						<h1>食物库存告警</h1>
+						<div id="food_short_chart" style="width: 600px;height:300px; padding-top: -100px;"></div>
+						<div v-for="(item,index) in foodTableData" :id="item.id" style=" margin-top: -200px; width: 600px;height:400px;"></div>
+						<br/>
+						<h1>近期诊疗记录</h1>
+						<el-table
+							:data="therapyTableData"
+							style="width: 100%">
+							<el-table-column
+								label="记录编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物编号"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物名字"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="物种"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.species_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="兽医编号"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.worker_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="兽医姓名"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.worker_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="内容记录"
+								width="200">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.description }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="开始日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.start_time }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="结束日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.end_time }}</span>
+								</template>
+							</el-table-column>
+						</el-table>
+						<br/>
+						<h1>近期进货记录</h1>
+						<el-table
+							:data="stockTableData"
+							style="width: 100%">
+							<el-table-column
+								label="记录编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食物"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.food_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="进货量"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.amount }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="进货开销"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.cost }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="进货日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.time }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="保质期至"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.expire_time }}</span>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-magic-stick"></i> 动物管理  </div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addAnimalDialogFormVisible = true">增加新的动物</el-button>
+						<el-dialog title="增加新的动物" :visible.sync="addAnimalDialogFormVisible">
+							<div style="font-weight: bold; margin-bottom:1vh;">名字</div>
+							<el-input v-model="newAnimalName" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">年龄</div>
+							<el-input-number size="small" v-model="newAnimalAge"></el-input-number>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">性别</div>
+							<el-select v-model="newAnimalGender" clearable placeholder="请选择性别">
+								<el-option v-for="item in animal_gender_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">物种</div>
+							<el-select v-model="newAnimalSpeciesName" clearable >
+								<el-option v-for="item in species_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否健康</div>
+							<el-select v-model="newAnimalHealthy" clearable placeholder="是否健康">
+								<el-option v-for="item in healthy_options" :value="item==='true'?'是':'否'"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所在居住区</div>
+							<el-select v-model="newAnimalDistrictName" clearable >
+								<el-option v-for="item in district_options" :value="item"></el-option>
+							</el-select>
+							<div slot="footer" class="dialog-footer">
+							<el-button @click="addAnimalDialogFormVisible = false">取 消</el-button>
+							<el-button type="primary" @click="addAnimal()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="animalTableData"
+							style="width: 100%">
+							<el-table-column
+								label="编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="名字"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="年龄"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.age }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="性别"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.gender }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="物种"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.species_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="是否健康"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.healthy ? "是" : "否" }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="居住区"
+								width="120">
+								<template slot-scope="scope">
+									<span>{{ scope.row.district_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateAnimal(scope.row.id, scope.row.name, scope.row.age, scope.row.gender, scope.row.species_name, scope.row.healthy, scope.row.district_name)">编辑</el-button>
+									<el-dialog title="编辑动物信息" :visible.sync="updateAnimalDialogFormVisible">
+									<div style="font-weight: bold; margin-bottom:1vh;">名字</div>
+									<el-input v-model="updateAnimalName" autocomplete="off"></el-input>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">年龄</div>
+									<el-input-number size="small" v-model="updateAnimalAge"></el-input-number>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">性别</div>
+									<el-select v-model="updateAnimalGender" clearable placeholder="请选择性别">
+										<el-option v-for="item in animal_gender_options" :value="item"></el-option>
+									</el-select>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">物种</div>
+									<el-select v-model="updateAnimalSpeciesName" clearable >
+										<el-option v-for="item in species_options" :value="item" :placeholder="updateAnimalSpeciesName"></el-option>
+									</el-select>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否健康</div>
+									<el-select v-model="updateAnimalHealthy" clearable placeholder="是否健康">
+										<el-option v-for="item in healthy_options" :value="item==='true'?'是':'否'"></el-option>
+									</el-select>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所在居住区</div>
+									<el-select v-model="updateAnimalDistrictName" clearable >
+										<el-option v-for="item in district_options" :value="item"></el-option>
+									</el-select>
+									<div slot="footer" class="dialog-footer">
+									<el-button @click="updateAnimalDialogFormVisible = false">取 消</el-button>
+									<el-button type="primary" @click="confirmUpdateAnimal()">确 定</el-button>
+									</div>
+								</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteAnimal(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除动物" 
+									:visible.async="deleteAnimalDialogFormVisible"
+									@close="deleteAnimalDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该动物的全部信息？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteAnimalDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteAnimal()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-collection"></i> 物种管理  </div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addSpeciesDialogFormVisible = true">增加新的物种</el-button>
+						<el-dialog title="增加新的物种" :visible.sync="addSpeciesDialogFormVisible">
+							<div style="font-weight: bold; margin-bottom:1vh;">名称</div>
+							<el-input v-model="newSpeciesName" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">平均寿命</div>
+							<el-input-number size="small" v-model="newSpeciesLife"></el-input-number>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">保护状况</div>
+							<el-input v-model="newSpeciesLevel" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">习性</div>
+							<el-input v-model="newSpeciesHabit" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">栖息地</div>
+							<el-input v-model="newSpeciesHabitat" autocomplete="off"></el-input>
+							<div slot="footer" class="dialog-footer">
+							<el-button @click="addSpeciesDialogFormVisible = false">取 消</el-button>
+							<el-button type="primary" @click="addSpecies()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="speciesTableData"
+							style="width: 100%">
+							<el-table-column
+								label="编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="名称"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="平均寿命/年"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.life }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="保护状况"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.level }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="习性"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.habit }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="栖息地"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.habitat }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateSpecies(scope.row.id, scope.row.name, scope.row.life, scope.row.level, scope.row.habit, scope.row.habitat)">编辑</el-button>
+									<el-dialog title="编辑物种信息" :visible.sync="updateSpeciesDialogFormVisible">
+									<el-form>
+										<div  style="font-weight: bold; margin-bottom:1vh;">名称</div>
+										<el-input v-model="updateSpeciesName" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">平均寿命</div>
+										<el-input-number size="small" v-model="updateSpeciesLife"></el-input-number>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">保护状况</div>
+										<el-input v-model="updateSpeciesLevel" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">习性</div>
+										<el-input v-model="updateSpeciesHabit" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">栖息地</div>
+										<el-input v-model="updateSpeciesHabitat" autocomplete="off"></el-input>
+									</el-form>
+										<div slot="footer" class="dialog-footer">
+										<el-button @click="updateSpeciesDialogFormVisible = false">取 消</el-button>
+										<el-button type="primary" 
+										@click="confirmUpdateSpecies()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteSpecies(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除人员" 
+									:visible.async="deleteSpeciesDialogFormVisible"
+									@close="deleteSpeciesDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该物种的全部信息？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteSpeciesDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteSpecies()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-s-custom"></i> 人员管理</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addWorkerDialogFormVisible = true">增加新的人员</el-button>
+						<el-dialog title="增加新的人员" :visible.sync="addWorkerDialogFormVisible">
+						<el-form>
+							<div  style="font-weight: bold; margin-bottom:1vh;">姓名</div>
+							<el-input v-model="newWorkerName" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">年龄</div>
+							<el-input-number size="small" v-model="newWorkerAge"></el-input-number>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">性别</div>
+							<el-select v-model="newWorkerGender" clearable placeholder="请选择性别">
+								<el-option v-for="item in gender_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">工龄</div>
+							<el-input-number size="small" v-model="newWorkerWorkingAge"></el-input-number>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所属饲养队</div>
+							<el-select v-model="newWorkerTeamName" clearable >
+								<el-option v-for="item in team_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否有经验</div>
+							<el-select v-model="newWorkerExperienced" clearable placeholder="是否有经验">
+								<el-option v-for="item in experienced_options" :value="item==='true'?'是':'否'"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否为兽医</div>
+							<el-select v-model="newWorkerVet" clearable placeholder="是否为兽医">
+								<el-option v-for="item in vet_options" :value="item==='true'?'是':'否'"></el-option>
+							</el-select>
+						</el-form>
+							<div slot="footer" class="dialog-footer">
+							<el-button @click="addWorkerDialogFormVisible = false">取 消</el-button>
+							<el-button type="primary" @click="addWorker()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="workerTableData"
+							style="width: 100%">
+							<el-table-column
+								label="编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="姓名"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="年龄"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.age }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="性别"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.gender }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="工龄/年"
+								width="80">
+								<template slot-scope="scope">
+									<span>{{ scope.row.working_age }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="饲养队"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.team_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="是否有经验"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.experienced ? "是" : "否"}}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="是否为兽医"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.vet ? "是" : "否" }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateWorker(scope.row.id, scope.row.name, scope.row.age, scope.row.gender, scope.row.working_age, scope.row.team_id, scope.row.experienced, scope.row.vet)">编辑</el-button>
+									<el-dialog title="编辑人员信息" :visible.sync="updateWorkerDialogFormVisible">
+									<el-form>
+										<div  style="font-weight: bold; margin-bottom:1vh;">姓名</div>
+										<el-input v-model="updateNewWorkerName" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">年龄</div>
+										<el-input-number size="small" v-model="updateNewWorkerAge"></el-input-number>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">性别</div>
+										<el-select v-model="updateNewWorkerGender" clearable >
+											<el-option v-for="item in gender_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">工龄</div>
+										<el-input-number size="small" v-model="updateNewWorkerWorkingAge"></el-input-number>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所属饲养队</div>
+										<el-select v-model="updateNewWorkerTeamName" clearable >
+											<el-option v-for="item in team_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否有经验</div>
+										<el-select v-model="updateNewWorkerExperienced" clearable>
+											<el-option v-for="item in experienced_options" :value="item==='true'?'是':'否'"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">是否为兽医</div>
+										<el-select v-model="updateNewWorkerVet" clearable>
+											<el-option v-for="item in vet_options" :value="item==='true'?'是':'否'"></el-option>
+										</el-select>
+									</el-form>
+										<div slot="footer" class="dialog-footer">
+										<el-button @click="updateWorkerDialogFormVisible = false">取 消</el-button>
+										<el-button type="primary" 
+										@click="confirmUpdateWorker()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteWorker(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除人员" 
+									:visible.async="deleteWorkerDialogFormVisible"
+									@close="deleteWorkerDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该人员的全部信息？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteWorkerDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteWorker()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-s-flag"></i> 饲养队管理</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addTeamDialogFormVisible = true">增加新的饲养队</el-button>
+						<el-dialog 
+						title="增加新的饲养队" 
+						:visible.async="addTeamDialogFormVisible"
+						@close="addTeamDialogFormVisible = false">
+							<el-form>
+								<div style="margin-bottom:1vh;font-weight: bold;">饲养队名称</div>
+								<el-input v-model="newTeamName" autocomplete="off"></el-input>
+							</el-form>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">队长编号</div>
+							<el-select v-model="newTeamCaptionID" clearable >
+								<el-option v-for="item in caption_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所负责区域</div>
+							<el-select v-model="newTeamAreaName" clearable >
+								<el-option v-for="item in area_options" :value="item"></el-option>
+							</el-select>
+							<div slot="footer" class="dialog-footer">
+								<el-button @click="addTeamDialogFormVisible = false">取 消</el-button>
+								<el-button type="primary" @click="addTeam()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="teamTableData"
+							style="width: 100%">
+							<el-table-column
+								label="饲养队编号"
+								width="100">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="饲养队名称"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="队长编号"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.caption_id==0 ? "无" : scope.row.caption_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="队长姓名"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.caption_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="所负责区域"
+								width="100">
+								<template slot-scope="scope">
+									<span>{{ scope.row.area_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateTeam(scope.row.id,scope.row.name, scope.row.caption_id, scope.row.area_name)">编辑</el-button>
+									<el-dialog 
+									title="编辑饲养队信息" 
+									:visible.async="updateTeamDialogFormVisible"
+									@close="updateTeamDialogFormVisible = false">
+										<el-form>
+											<div style="margin-bottom:1vh;font-weight: bold;">饲养队名称</div>
+											<el-input v-model="updateTeamName" autocomplete="off"></el-input>
+										</el-form>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">队长编号</div>
+										<el-select v-model="updateTeamCaptionId" clearable >
+											<el-option v-for="item in caption_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所负责区域</div>
+										<el-select v-model="updateTeamAreaName" clearable >
+											<el-option v-for="item in area_options" :value="item"></el-option>
+										</el-select>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateTeamDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateTeam()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteTeam(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除饲养队" 
+									:visible.async="deleteTeamDialogFormVisible"
+									@close="deleteTeamDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该饲养队的全部信息？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteTeamDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteTeam()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-guide"></i> 区域管理</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addAreaDialogFormVisible = true">增加新的区域</el-button>
+						<el-dialog title="增加新的区域" :visible.sync="addAreaDialogFormVisible">
+						<el-form>
+						<el-form-item label="区域名称">
+							<el-input v-model="newAreaName" autocomplete="off"></el-input>
+						</el-form-item>
+						</el-form>
+							<div slot="footer" class="dialog-footer">
+							<el-button @click="addAreaDialogFormVisible = false">取 消</el-button>
+							<el-button type="primary" @click="addArea()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="areaTableData"
+							style="width: 100%">
+							<el-table-column
+								label="区域编号"
+								width="180">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="区域名称"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateArea(scope.row.id,scope.row.name)">编辑</el-button>
+									<el-dialog 
+									title="编辑区域" 
+									:visible.async="updateAreaDialogFormVisible"
+									@close="updateAreaDialogFormVisible = false">
+										<el-form>
+											<el-form-item label="新的区域名称">
+												<el-input v-model="updateNewAreaName" :placeholder="updateOldAreaName" autocomplete="off"></el-input>
+											</el-form-item>
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateAreaDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateArea()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteArea(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除动物区域" 
+									:visible.async="deleteAreaDialogFormVisible"
+									@close="deleteAreaDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该区域？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteAreaDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteArea()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-location-outline"></i> 居住区管理</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addDistrictDialogFormVisible = true">增加新的居住区</el-button>
+						<el-dialog 
+						title="增加新的居住区" 
+						:visible.async="addDistrictDialogFormVisible"
+						@close="addDistrictDialogFormVisible = false">
+							<el-form>
+								<div style="margin-bottom:1vh;font-weight: bold;">居住区名称</div>
+								<el-form-item label="居住区名称">
+									<el-input v-model="newDistrictName" autocomplete="off"></el-input>
+								</el-form-item>
+							</el-form>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所属区域</div>
+							<el-select v-model="newDistrictAreaName" clearable >
+								<el-option v-for="item in area_options" :value="item"></el-option>
+							</el-select>
+							<div slot="footer" class="dialog-footer">
+								<el-button @click="addDistrictDialogFormVisible = false">取 消</el-button>
+								<el-button type="primary" @click="addDistrict()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="districtTableData"
+							style="width: 100%">
+							<el-table-column
+								label="居住区编号"
+								width="180">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="居住区名称"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="所属区域"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.area_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateDistrict(scope.row.id,scope.row.name, scope.row.area_name)">编辑</el-button>
+									<el-dialog 
+									title="编辑居住区信息" 
+									:visible.async="updateDistrictDialogFormVisible"
+									@close="updateDistrictDialogFormVisible = false">
+										<el-form>
+											<div style="margin-bottom:1vh;font-weight: bold;">居住区名称</div>
+											<el-form-item label="居住区名称">
+												<el-input v-model="updateDistrictName" :placeholder="updateDistrictName" autocomplete="off"></el-input>
+											</el-form-item>
+										</el-form>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">所属区域</div>
+										<el-select v-model="updateDistrictAreaName" clearable :placeholder="updateDistrictAreaName">
+											<el-option v-for="item in area_options" :value="item"></el-option>
+										</el-select>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateDistrictDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateDistrict()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteDistrict(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除动物居住区" 
+									:visible.async="deleteDistrictDialogFormVisible"
+									@close="deleteDistrictDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该居住区？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteDistrictDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteDistrict()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-food"></i> 食物管理</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addFoodDialogFormVisible = true">增加新的食物类别</el-button>
+						<el-dialog title="增加新的食物" :visible.sync="addFoodDialogFormVisible">
+						<el-form>
+						<el-form-item label="食物名称">
+							<el-input v-model="newFoodName" autocomplete="off"></el-input>
+						</el-form-item>
+						<el-form-item label="食物单位">
+							<el-input v-model="newFoodUnit" autocomplete="off"></el-input>
+						</el-form-item>
+						</el-form>
+							<div slot="footer" class="dialog-footer">
+							<el-button @click="addFoodDialogFormVisible = false">取 消</el-button>
+							<el-button type="primary" @click="addFood()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="foodTableData"
+							style="width: 100%">
+							<el-table-column
+								label="食物编号"
+								width="180">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食物名称"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食物单位"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.unit }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食物库存"
+								width="180">
+								<template slot-scope="scope">
+									<span>{{ scope.row.storage }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="success"
+										@click="addStock(scope.row.name)">进货</el-button>
+									<el-dialog title="增加新的进货记录" :visible.sync="addStockDialogFormVisible">
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="addStockDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmStock()">确 定</el-button>
+										</div>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">进货量</div>
+									<el-form>
+										<el-form-item>
+											<el-input v-model="newStockAmount" autocomplete="off"></el-input>
+										</el-form-item>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">进货总开销</div>
+										<el-form-item>
+											<el-input v-model="newStockCost" autocomplete="off"></el-input>
+										</el-form-item>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">进货日期</div>
+									</el-form>
+									<el-date-picker
+										v-model="newStockTime"
+										type="date"
+										placeholder="进货日期"
+										:picker-options="pickerOptions"
+										value-format="yyyy-MM-dd">
+									</el-date-picker>
+									<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">保质期至</div>
+									<el-date-picker
+										v-model="newStockExpireTime"
+										type="date"
+										placeholder="保质期至"
+										value-format="yyyy-MM-dd">
+									</el-date-picker>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateFood(scope.row.id,scope.row.name,scope.row.unit,scope.row.storage)">编辑</el-button>
+									<el-dialog 
+									title="编辑食物信息" 
+									:visible.async="updateFoodDialogFormVisible"
+									@close="updateFoodDialogFormVisible = false">
+										<el-form>
+											<el-form-item label="食物名称">
+												<el-input v-model="updateFoodName" :placeholder="updateFoodName" autocomplete="off"></el-input>
+											</el-form-item>
+											<el-form-item label="食物单位">
+												<el-input v-model="updateFoodUnit" :placeholder="updateFoodName" autocomplete="off"></el-input>
+											</el-form-item>
+											<el-form-item label="食物库存">
+												<el-input v-model="updateFoodStorage" :placeholder="updateFoodName" autocomplete="off"></el-input>
+											</el-form-item>
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateFoodDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateFood()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteFood(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除食物" 
+									:visible.async="deleteFoodDialogFormVisible"
+									@close="deleteFoodDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该种食物？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteFoodDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteFood()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-tableware"></i> 喂食记录</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addFeedDialogFormVisible = true">增加新的喂食记录</el-button>
+						<el-dialog 
+						title="增加新的喂食记录" 
+						:visible.async="addFeedDialogFormVisible"
+						@close="addFeedDialogFormVisible = false">
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">动物编号</div>
+							<el-select v-model="newFeedAnimalId" clearable >
+								<el-option v-for="item in animal_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">食物</div>
+							<el-select v-model="newFeedFoodName" clearable >
+								<el-option v-for="item in food_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">食量</div>
+							<el-input v-model="newFeedAppetite" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">喂食日期</div>
+							<el-date-picker
+								v-model="newFeedDate"
+								type="date"
+								placeholder="喂食日期"
+								:picker-options="pickerOptions"
+								value-format="yyyy-MM-dd">
+							</el-date-picker>
+							<div slot="footer" class="dialog-footer">
+								<el-button @click="addFeedDialogFormVisible = false">取 消</el-button>
+								<el-button type="primary" @click="addFeed()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="feedTableData"
+							style="width: 100%">
+							<el-table-column
+								label="记录编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物编号"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物名字"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="物种"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.species }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食物"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.food_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="食量"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.appetite }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="喂养日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.date }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateFeed(scope.row.id, scope.row.animal_id, scope.row.food_name, scope.row.appetite, scope.row.date)">编辑</el-button>
+									<el-dialog 
+									title="编辑记录信息" 
+									:visible.async="updateFeedDialogFormVisible"
+									@close="updateFeedDialogFormVisible = false">
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">动物编号</div>
+										<el-select v-model="updateFeedAnimalId" clearable >
+											<el-option v-for="item in animal_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">食物</div>
+										<el-select v-model="updateFeedFoodName" clearable >
+											<el-option v-for="item in food_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">食量</div>
+										<el-input v-model="updateFeedAppetite" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">喂养日期</div>
+										<el-date-picker
+											v-model="updateFeedDate"
+											type="date"
+											placeholder="喂养日期"
+											:picker-options="pickerOptions"
+											value-format="yyyy-MM-dd">
+										</el-date-picker>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateFeedDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateFeed()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteFeed(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除动物居住区" 
+									:visible.async="deleteFeedDialogFormVisible"
+									@close="deleteFeedDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该条记录？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteFeedDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteFeed()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane style="height:90%;overflow-y:auto;overflow-x:hidden;">
+					<div slot="label" class="tab-bar"><i class="el-icon-first-aid-kit"></i> 治疗记录</div>
+					<div class="tab">
+						<el-button type="primary" icon="el-icon-plus" @click="addTherapyDialogFormVisible = true">增加新的治疗记录</el-button>
+						<el-dialog 
+						title="增加新的治疗记录" 
+						:visible.async="addTherapyDialogFormVisible"
+						@close="addTherapyDialogFormVisible = false">
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">动物编号</div>
+							<el-select v-model="newTherapyAnimalId" clearable >
+								<el-option v-for="item in animal_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">兽医编号</div>
+							<el-select v-model="newTherapyWorkerId" clearable >
+								<el-option v-for="item in vet_worker_options" :value="item"></el-option>
+							</el-select>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">内容记录</div>
+							<el-input v-model="newTherapyDescription" autocomplete="off"></el-input>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">开始日期</div>
+							<el-date-picker
+								v-model="newTherapyStartTime"
+								type="date"
+								placeholder="开始日期"
+								:picker-options="pickerOptions"
+								value-format="yyyy-MM-dd">
+							</el-date-picker>
+							<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">结束日期</div>
+							<el-date-picker
+								v-model="newTherapyEndTime"
+								type="date"
+								placeholder="结束日期"
+								:picker-options="pickerOptions"
+								value-format="yyyy-MM-dd">
+							</el-date-picker>
+							<div slot="footer" class="dialog-footer">
+								<el-button @click="addTherapyDialogFormVisible = false">取 消</el-button>
+								<el-button type="primary" @click="addTherapy()">确 定</el-button>
+							</div>
+						</el-dialog>
+						<el-table
+							:data="therapyTableData"
+							style="width: 100%">
+							<el-table-column
+								label="记录编号"
+								width="80">
+								<template slot-scope="scope">
+									<el-tag size="medium"><span style="margin-left: 10px">{{ scope.row.id }}</span></el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物编号"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="动物名字"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.animal_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="物种"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.species_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="兽医编号"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.worker_id }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="兽医姓名"
+								width="80">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.worker_name }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="内容记录"
+								width="100">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.description }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="开始日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.start_time }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								label="结束日期"
+								width="120">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.end_time }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										type="warning"
+										@click="updateTherapy(scope.row.id, scope.row.animal_id, scope.row.worker_id, scope.row.description, scope.row.start_time, scope.row.end_time)">编辑</el-button>
+									<el-dialog 
+									title="编辑记录信息" 
+									:visible.async="updateTherapyDialogFormVisible"
+									@close="updateTherapyDialogFormVisible = false">
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">动物编号</div>
+										<el-select v-model="updateTherapyAnimalId" clearable >
+											<el-option v-for="item in animal_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">兽医编号</div>
+										<el-select v-model="updateTherapyWorkerId" clearable >
+											<el-option v-for="item in vet_worker_options" :value="item"></el-option>
+										</el-select>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">内容记录</div>
+										<el-input v-model="updateTherapyDescription" autocomplete="off"></el-input>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">开始日期</div>
+										<el-date-picker
+											v-model="updateTherapyStartTime"
+											type="date"
+											placeholder="开始日期"
+											:picker-options="pickerOptions"
+											value-format="yyyy-MM-dd">
+										</el-date-picker>
+										<div style="margin-top: 2vh; margin-bottom:1vh;font-weight: bold;">结束日期</div>
+										<el-date-picker
+											v-model="updateTherapyEndTime"
+											type="date"
+											placeholder="结束日期"
+											:picker-options="pickerOptions"
+											value-format="yyyy-MM-dd">
+										</el-date-picker>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="updateTherapyDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmUpdateTherapy()">确 定</el-button>
+										</div>
+									</el-dialog>
+									<el-button
+										size="mini"
+										type="danger"
+										@click="deleteTherapy(scope.row.id)">删除</el-button>
+									<el-dialog 
+									title="删除动物居住区" 
+									:visible.async="deleteTherapyDialogFormVisible"
+									@close="deleteTherapyDialogFormVisible = false">
+										<el-form>
+											删除后将不可恢复，确定删除该条记录？
+										</el-form>
+										<div slot="footer" class="dialog-footer">
+											<el-button @click="deleteTherapyDialogFormVisible = false">取 消</el-button>
+											<el-button type="primary" @click="confirmDeleteTherapy()">确 定</el-button>
+										</div>
+									</el-dialog>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane>
+					<div slot="label" class="tab-bar" @click="logoutDialogVisible = true"><i class="el-icon-s-custom"></i>退出登录</div></el-tab-pane>
+					<el-dialog
+					title="提示"
+					:visible.sync="logoutDialogVisible"
+					width="30%"
+					:before-close="handleClose">
+					<span>确定退出登录？</span>
+					<span slot="footer" class="dialog-footer">
+					<el-button @click="logoutDialogVisible = false">取 消</el-button>
+					<el-button type="primary" @click="logout">确 定</el-button>
+					</span>
+					</el-dialog>		
+			</el-tabs>
+		</div>
+	</body>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="js/echarts.min.js"></script>
+	<script src="js/global.js"></script>
+	<script src="js/index.js"></script>
+</html>

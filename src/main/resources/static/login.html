@@ -1,0 +1,60 @@
+<!--
+ * Created by zhangyipeng on 2021/06/12.
+ *-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>登录</title>
+		<link rel="shortcut icon" href="images/logo/login.png" type="image/x-icon" />
+		<link rel="stylesheet" href="css/login.css">		
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	</head>
+
+	<body>
+		<div id="login">
+			<div id="input">
+				<div id="logo_area"></div>
+				<div id="title_area">
+					<div>登录&注册</div>
+					<div style="font-size: 24px;">动物园信息管理系统</div>
+				</div>
+				<div id="input_area">
+					<el-tabs value="first" @tab-click="handleClick">
+					<el-tab-pane label="登录" name="first">
+						<div style="font-weight: bold; margin-bottom: 0.3rem;">用户名</div>
+						<el-input placeholder="请输入用户名" v-model="login_input_username" style="height: 5vh;">
+						<template slot="prepend"><i class="el-icon-user"></i></template>
+						</el-input>
+						<div style="font-weight: bold; margin-top: 0.6rem; margin-bottom: 0.3rem;">密码</div>
+						<el-input placeholder="请输入密码" v-model="login_input_password" style="height: 5vh;">
+						<template slot="prepend"><i class="el-icon-unlock"></i></template>
+						</el-input>
+						<el-button style="margin-top: 0.6rem;" type="primary" @click="login()">现在登录</el-button>
+					</el-tab-pane>
+					<el-tab-pane label="注册" name="second">
+						<div style="font-weight: bold; margin-bottom: 0.3rem;">用户名</div>
+						<el-input placeholder="请设置用户名" v-model="register_input_username" style="height: 5vh;">
+						<template slot="prepend"><i class="el-icon-user"></i></template>
+						</el-input>
+						<div style="font-weight: bold; margin-top: 0.6rem; margin-bottom: 0.3rem;">密码</div>
+						<el-input placeholder="请设置密码" v-model="register_input_password" style="height: 5vh;">
+						<template slot="prepend"><i class="el-icon-unlock"></i></template>
+						</el-input>
+						<div style="font-weight: bold; margin-top: 0.6rem; margin-bottom: 0.3rem;">邮箱</div>
+						<el-input placeholder="请设置邮箱" v-model="register_input_email" style="height: 5vh;">
+						<template slot="prepend"><i class="el-icon-unlock"></i></template>
+						</el-input>
+						<el-button style="margin-top: 0.6rem;" type="primary" @click="register()">现在注册</el-button>
+					</el-tab-pane>
+					</el-tabs>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="js/global.js"></script>
+	<script src="js/login.js"></script>
+</html>

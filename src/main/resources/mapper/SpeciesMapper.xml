@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.SpeciesMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Species">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="life" property="life" jdbcType="BIGINT"></result>
+        <result column="level" property="level" jdbcType="VARCHAR"></result>
+        <result column="habit" property="habit" jdbcType="VARCHAR"></result>
+        <result column="habitat" property="habitat" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, name, id, life, level, habit, habitat
+    </sql>
+
+
+    <select id="selectAllSpecies" resultMap="BaseResultMap">
+        select *
+        from species;
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from species
+        where id = #{id}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from species
+        where name = #{name}
+    </select>
+
+    <insert id="insert">
+        insert into species(name, life, level, habit, habitat)
+        values(#{name}, #{life}, #{level}, #{habit}, #{habitat})
+    </insert>
+
+    <update id="updateById">
+        update species
+        set name = #{name}, life = #{life}, level = #{level}, habit = #{habit}, habitat = #{habitat}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from species
+        where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.AnimalMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Animal">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="age" property="age" jdbcType="BIGINT"></result>
+        <result column="gender" property="gender" jdbcType="VARCHAR"></result>
+        <result column="species_id" property="speciesId" jdbcType="BIGINT"></result>
+        <result column="healthy" property="healthy" jdbcType="TINYINT"></result>
+        <result column="district_id" property="districtId" jdbcType="BIGINT"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, name, age, gender, species_id, healthy, district_id
+    </sql>
+
+    <select id="selectAllAnimal" resultMap="BaseResultMap">
+        select *
+        from animal;
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from animal
+        where id = #{id}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from animal
+        where name = #{name}
+    </select>
+
+    <insert id="insert">
+        insert into animal(name, age, gender, species_id, healthy, district_id)
+        values(#{name}, #{age}, #{gender}, #{speciesId}, #{healthy}, #{districtId})
+    </insert>
+
+    <update id="updateById">
+        update animal
+        set name = #{name}, age = #{age}, gender = #{gender}, species_id = #{speciesId},
+                    healthy = #{healthy}, district_id = #{districtId}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from animal
+        where id = #{id}
+    </delete>
+</mapper>

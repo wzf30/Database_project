@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.StockRecordMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.StockRecord">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="food_id" property="foodId" jdbcType="BIGINT"/>
+        <result column="amount" property="amount" jdbcType="NUMERIC"/>
+        <result column="cost" property="cost" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="expiry_time" property="expireTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, food_id, amount, cost, time, expiry_time
+    </sql>
+
+    <select id="select" resultMap="BaseResultMap">
+        select *
+        from stock
+    </select>
+
+    <insert id="insert">
+        insert into stock(food_id, amount, cost, time, expiry_time)
+        values(#{foodId}, #{amount}, #{cost}, #{time}, #{expireTime})
+    </insert>
+</mapper>

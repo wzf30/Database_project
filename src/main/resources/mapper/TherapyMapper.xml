@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.TherapyMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Therapy">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="animal_id" property="animalId" jdbcType="BIGINT"></result>
+        <result column="worker_id" property="workerId" jdbcType="BIGINT"></result>
+        <result column="description" property="description" jdbcType="VARCHAR"></result>
+        <result column="start_time" property="startTime" jdbcType="DATE"></result>
+        <result column="end_time" property="endTime" jdbcType="DATE"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, animal_id, worker_id, description, start_time, end_time
+    </sql>
+
+    <select id="selectAllTherapy" resultMap="BaseResultMap">
+        select *
+        from therapy;
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from therapy
+        where id = #{id}
+    </select>
+
+    <insert id="insert">
+        insert into therapy(animal_id, worker_id, description, start_time, end_time)
+        values(#{animalId}, #{workerId}, #{description}, #{startTime}, #{endTime})
+    </insert>
+
+    <update id="updateById">
+        update therapy
+        set animal_id = #{animalId}, worker_id = #{workerId}, description = #{description},
+            start_time = #{startTime}, end_time = #{endTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from therapy
+        where id = #{id}
+    </delete>
+</mapper>

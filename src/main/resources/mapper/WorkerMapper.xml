@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.WorkerMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Worker">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="age" property="age" jdbcType="BIGINT"></result>
+        <result column="gender" property="gender" jdbcType="VARCHAR"></result>
+        <result column="working_age" property="workingAge" jdbcType="BIGINT"></result>
+        <result column="team_id" property="teamId" jdbcType="BIGINT"></result>
+        <result column="experienced" property="experienced" jdbcType="TINYINT"></result>
+        <result column="vet" property="vet" jdbcType="TINYINT"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, name, age, gender, working_age, team_id, experienced, vet
+    </sql>
+
+    <select id="selectAllWorker" resultMap="BaseResultMap">
+        select *
+        from worker
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from worker
+        where id = #{id}
+    </select>
+
+    <insert id="insert">
+        insert into worker(name, age, gender, working_age, team_id, experienced, vet)
+        values(#{name}, #{age}, #{gender}, #{workingAge}, #{teamId}, #{experienced}, #{vet})
+    </insert>
+
+    <update id="updateById">
+        update worker
+        set name = #{name}, age = #{age}, gender = #{gender}, working_age = #{workingAge}, team_id = #{teamId}, experienced = #{experienced}, vet = #{vet}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from worker
+        where id = #{id}
+    </delete>
+</mapper>

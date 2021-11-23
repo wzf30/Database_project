@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.zookeeper.mapper.TeamMapper">
+    <resultMap id="BaseResultMap" type="com.example.zookeeper.dao.Team">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="caption_id" property="captionId" jdbcType="BIGINT"></result>
+        <result column="area_id" property="areaId" jdbcType="BIGINT"></result>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, name, caption_id, area_id
+    </sql>
+
+    <select id="selectAllTeam" resultMap="BaseResultMap">
+        select *
+        from team;
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from team
+        where id = #{id}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from team
+        where name = #{name}
+    </select>
+
+    <insert id="insert">
+        insert into team(name, caption_id, area_id)
+        values(#{name}, #{captionId}, #{areaId})
+    </insert>
+
+    <update id="updateById">
+        update team
+        set name = #{name}, caption_id = #{captionId}, area_id = #{areaId}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from Team
+        where id = #{id}
+    </delete>
+
+</mapper>
